@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>React Counter Example</title>
+</head>
+<body>
+  <main id="root"></main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.0.5/redux.min.js"></script>
+  <script src="https://fb.me/react-0.14.6.js"></script>
+  <script src="https://fb.me/react-dom-0.14.6.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
+  <script type="text/babel">
+  const counter = (state = 0, action) => {
+    switch (action.type) {
+      case 'INCREMENT':
+        return state + 1;
+      case 'DECREMENT':
+        return state - 1;
+      default:
+        return state;
+    }
+  };
+
+  const Counter = ({
+    value,
+    increment,
+    decrement
+  }) => (
+    <section>
+      <h1>{value}</h1>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </section>
+  );
+
+  const {createStore} = Redux,
+    store = createStore(counter);
+
+  const render = () => {
+    ReactDOM.render(
+      <Counter
+        value={store.getState()}
+        increment={() => store.dispatch({type: 'INCREMENT'})}
+        decrement={() => store.dispatch({type: 'DECREMENT'})} />,
+      root
+    );
+  };
+
+  store.subscribe(render);
+
+  render();
+  </script>
+</body>
+</html>

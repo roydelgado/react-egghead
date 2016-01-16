@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>React Counter Example</title>
+</head>
+<body>
+  <main id="root"></main>
+  <script src="https://wzrd.in/standalone/expect@latest"></script>
+  <script src="https://wzrd.in/standalone/deep-freeze@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.0.5/redux.min.js"></script>
+  <script src="https://fb.me/react-0.14.6.js"></script>
+  <script src="https://fb.me/react-dom-0.14.6.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
+  <script type="text/babel">
+  //just pass a 0 at the end of the array
+  const addCounter = (list) => {
+    //can't use the following if the list is frozen
+    //list.push(0);
+    //return list;
+    //-----
+    //can not return:
+    //return list.push(0) as it would return the new length property of list
+
+    //use spread operator to return an array concatenation of the current array plus the 0 at len-1
+    return [...list, 0];
+  };
+
+  const removeCounter = (list, index) => {
+    //can't use splice when list is frozen, it modifies the array
+    //can't return list.splice(index, 1); it would return an array of the deleted index
+    //------
+    //slice returns a shallow copy of an array's portion
+    //return list.slice(0, index).concat(list.slice(index + 1));
+    //or
+    return [
+      ...list.slice(0, index),
+      ...list.slice(index +1)
+    ];
+  };
+
+  const incrementCounter = (list, index) => {
+    list[index]++;
+    return list;
+  }
+
+  //------ TESTS -----------
+
+  const testAddCounter = () => {
+    const listBefore = [],
+      listAfter = [0];
+
+      //prevent list modification
+      deepFreeze(listBefore);
+
+    expect(
+      addCounter(listBefore)
+    ).toEqual(listAfter);
+  };
+
+  const testRemoveCounter = () => {
+    const listBefore = [10,20,30],
+      listAfter = [10,30];
+
+    deepFreeze(listBefore);
+
+    expect(
+      removeCounter(listBefore, 1)
+    ).toEqual(listAfter);
+  };
+
+  const testIncrementCounter = () => {
+    const listBefore = [10, 20, 30],
+      listAfter = [10, 21, 30];
+
+    deepFreeze(listBefore);
+
+    expect(
+      incrementCounter(listBefore, 1)
+    ).toEqual(listAfter);
+  };
+
+  testAddCounter();
+  console.info('testAddCounter passed');
+  testRemoveCounter();
+  console.info('testRemoveCounter passed');
+  testIncrementCounter();
+  console.info('testIncrementCounter passed');
+  </script>
+</body>
+</html>
