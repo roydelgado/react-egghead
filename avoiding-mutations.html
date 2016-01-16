@@ -12,6 +12,23 @@
   <script src="https://fb.me/react-dom-0.14.6.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
   <script type="text/babel">
+
+  const main = document.getElementById('root')
+    , logger = (fn) => {
+      let error = ''
+        , status
+        , tpl;
+
+      try {
+        fn();
+        status = 'passed';
+      } catch (e) {
+        status = 'failed';
+        error = ` - ${e}`;
+      }
+      tpl = `<p><strong>${fn.name}</strong> <em>${status}</em>${error}</p>`
+      main.innerHTML += tpl;
+  };
   //just pass a 0 at the end of the array
   const addCounter = (list) => {
     //can't use the following if the list is frozen
@@ -34,13 +51,29 @@
     //or
     return [
       ...list.slice(0, index),
-      ...list.slice(index +1)
+      ...list.slice(index+1)
     ];
   };
 
   const incrementCounter = (list, index) => {
-    list[index]++;
-    return list;
+    // would modify list
+    // list[index]++;
+    // return list;
+    //-------
+    //1 take the part before the index
+    //2 increment and concat index
+    //3concat the rest of list
+    //VANILLA:
+    // return list
+    //   .slice(0, index) //from 0 to index
+    //   .concat(list[index]+1) //new [with increment result on index]
+    //   .concat(list.slice(index+1)); //the rest after the slice
+    //SPREAD:
+    return [
+      ...list.slice(0, index), //from 0 to index
+      list[index]+1, //value of the increment result on index
+      ...list.slice(index+1) //the rest after the slice
+    ]
   }
 
   //------ TESTS -----------
@@ -79,12 +112,9 @@
     ).toEqual(listAfter);
   };
 
-  testAddCounter();
-  console.info('testAddCounter passed');
-  testRemoveCounter();
-  console.info('testRemoveCounter passed');
-  testIncrementCounter();
-  console.info('testIncrementCounter passed');
+  logger(testAddCounter)
+  logger(testRemoveCounter);
+  logger(testIncrementCounter);
   </script>
 </body>
 </html>
