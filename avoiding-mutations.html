@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>React Counter Example</title>
+  <title>Avoiding Array and Object mutations</title>
 </head>
 <body>
   <main id="root"></main>
   <script src="https://wzrd.in/standalone/expect@latest"></script>
   <script src="https://wzrd.in/standalone/deep-freeze@latest"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/3.0.5/redux.min.js"></script>
-  <script src="https://fb.me/react-0.14.6.js"></script>
-  <script src="https://fb.me/react-dom-0.14.6.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
   <script type="text/babel">
 
@@ -24,11 +21,11 @@
         status = 'passed';
       } catch (e) {
         status = 'failed';
-        error = ` - ${e}`;
+        error = ` - <span style="color: red">${e}</span>`;
       }
       tpl = `<p><strong>${fn.name}</strong> <em>${status}</em>${error}</p>`
       main.innerHTML += tpl;
-  };
+    };
   //just pass a 0 at the end of the array
   const addCounter = (list) => {
     //can't use the following if the list is frozen
@@ -74,7 +71,21 @@
       list[index]+1, //value of the increment result on index
       ...list.slice(index+1) //the rest after the slice
     ]
-  }
+  };
+
+  const toggleTodo = (todo) => {
+    // todo.completed = !todo.completed;
+    // return todo;
+    // es6
+    // return Object.assign({}, todo, {
+    //   completed: !todo.completed
+    // });
+    //es7
+    return {
+      ...todo,
+      completed: !todo.completed
+    };
+  };
 
   //------ TESTS -----------
 
@@ -112,9 +123,30 @@
     ).toEqual(listAfter);
   };
 
+  const testToggleTodo = () => {
+    const todoBefore = {
+        id: 0,
+        text: 'Lorem ipsum',
+        completed: false
+      }
+      , todoAfter = {
+        id: 0,
+        text: 'Lorem ipsum',
+        completed: true
+      };
+
+    deepFreeze(todoBefore);
+
+    expect(
+      toggleTodo(todoBefore)
+    ).toEqual(todoAfter);
+  };
+
   logger(testAddCounter)
   logger(testRemoveCounter);
   logger(testIncrementCounter);
+
+  logger(testToggleTodo);
   </script>
 </body>
 </html>

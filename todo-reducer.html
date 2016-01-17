@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Writing a Todo List Reducer</title>
+</head>
+<body>
+  <main id="root"></main>
+  <script src="https://wzrd.in/standalone/expect@latest"></script>
+  <script src="https://wzrd.in/standalone/deep-freeze@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser.min.js"></script>
+  <script type="text/babel">
+  const main = document.getElementById('root')
+    , logger = (fn) => {
+      let error = ''
+        , status
+        , tpl;
+
+      try {
+        fn();
+        status = 'passed';
+      } catch (e) {
+        status = 'failed';
+        error = ` - <span style="color: red">${e}</span>`;
+      }
+      tpl = `<p><strong>${fn.name}</strong> <em>${status}</em>${error}</p>`
+      main.innerHTML += tpl;
+    };
+
+  //reducer composition
+  const todo = (state, action) => {
+    switch (action.type) {
+      case 'ADD_TODO':
+        return {
+            id: action.id,
+            text: action.text,
+            completed: false
+          };
+      case 'TOGGLE_TODO':
+        //state refers to the indiviual todo
+        if (state.id !== action.id) {
+          return state;
+        }
+
+        return {
+          ...state,
+          completed: !state.completed
+        };
+      default:
+        return state;
+    };
+  };
+
+  const todos = (state=[], action) => {
+    switch (action.type) {
+      case 'ADD_TODO':
+        return [
+          ...state,
+          todo(undefined, action)
+        ];
+      case 'TOGGLE_TODO':
+        return state.map(t => todo(t, action));
+      default:
+        return state;
+    };
+  };
+
+  // ======= TESTS ========
+
+  const testAddTodo = () => {
+    const stateBefore = []
+      , action = {
+        type: 'ADD_TODO',
+        id: 0,
+        text: 'Lorem ipsum'
+      }
+      , stateAfter = [
+        {
+          id: 0,
+          text: 'Lorem ipsum',
+          completed: false
+        }
+      ];
+
+    deepFreeze(stateBefore);
+    deepFreeze(action);
+
+    expect(
+      todos(stateBefore, action)
+    ).toEqual(stateAfter);
+  };
+
+  const testToggleTodo = () => {
+    const stateBefore = [
+        {
+          id: 0,
+          text: 'Lorem ipsum',
+          completed: false
+        },
+        {
+          id: 1,
+          text: 'At vero eos',
+          completed: false
+        }
+      ]
+      , action = {
+        type: 'TOGGLE_TODO',
+        id: 1,
+      }
+      , stateAfter = [
+        {
+          id: 0,
+          text: 'Lorem ipsum',
+          completed: false
+        },
+        {
+          id: 1,
+          text: 'At vero eos',
+          completed: true
+        }
+      ];
+
+    deepFreeze(stateBefore);
+    deepFreeze(action);
+
+    expect(
+      todos(stateBefore, action)
+    ).toEqual(stateAfter);
+  };
+
+  logger(testAddTodo);
+  logger(testToggleTodo);
+
+  </script>
+</body>
+</html>
