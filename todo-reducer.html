@@ -26,7 +26,7 @@
       main.innerHTML += tpl;
     };
 
-  //reducer composition
+  //reducer composition: one reducer can be called from another reducer
   const todo = (state, action) => {
     switch (action.type) {
       case 'ADD_TODO':
