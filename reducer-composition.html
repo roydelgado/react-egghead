@@ -85,12 +85,33 @@
   // const { createStore } = Redux
   //   ,  store = createStore(todoApp);
 
-  //but we can use Redux combineReducers to avoid typing that ^
+  // combine reducer from scratch:
+  // const combineReducers = (reducers) => {
+  //   //the returning function has the reducer signature
+  //   return (state = {}, action) => {
+  //     // get all the keys from the reducers object
+  //     // then call the reduce on all indexes because we
+  //     // want to produce a single value by accumulating every reducer key
+  //     // and calling the corresponding reducer
+  //     return Object.keys(reducers).reduce(
+  //       (nextState, key) => {
+  //         nextState[key] = reducers[key](
+  //           state[key],
+  //           action
+  //         );
+  //         return nextState;
+  //       },
+  //       {} //this would be the initial next state before all the keys are processed
+  //     );
+  //   }
+  // };
+
+  // but we can use Redux combineReducers to avoid typing that ^
   const { combineReducers, createStore } = Redux
     // using ES6 object literal shorthand notation:
     ,  todoApp = combineReducers({
-      todos, //: todos,
-      visibilityFilter //: visibilityFilter
+      todos, // : todos,
+      visibilityFilter // : visibilityFilter
     })
     ,  store = createStore(todoApp);
 
@@ -118,7 +139,7 @@
   console.log('State after dispatching TOGGLE_TODO on 0');
   console.log(store.getState());
   console.log('Dispatching SET_VISIBILITY_FILTER');
-  //will not affect todos, just the visibility filter
+  // will not affect todos, just the visibility filter
   store.dispatch({
     type: 'SET_VISIBILITY_FILTER',
     filter: 'SHOW_COMPLETED'
